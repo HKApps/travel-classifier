@@ -1,0 +1,11 @@
+development:
+  adapter: postgresql
+  encoding: unicode
+  database: hibryce_development
+  pool: 5
+
+test:
+  adapter: postgresql
+  encoding: unicode
+  database: hibryce_test
+  pool: 5
