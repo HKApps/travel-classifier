@@ -13,7 +13,7 @@ class UserCreationService
       if user.changed?
         user.save!
       end
-      #UserCalendarFetcherJob.perform_async(user.id)
+      UserCalendarFetcherWorker.perform_async(user.id)
     end
   end
 end

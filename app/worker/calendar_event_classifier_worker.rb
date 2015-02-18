@@ -6,7 +6,7 @@ class CalendarEventClassifierWorker
   include Sidekiq::Worker
 
   def perform(event_id)
-    event = Event.find event_id
+    event = CalendarEvent.find event_id
     TravelClassifierService.classify!(event)
   end
 end

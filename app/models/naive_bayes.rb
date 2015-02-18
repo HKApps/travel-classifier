@@ -12,6 +12,10 @@ class NaiveBayes
     end
   end
 
+  def ready_to_classify?
+    @properties.total_words.present?
+  end
+
   def train(category, document)
     # Process text
     words = extract_words(document) do |word, count|
@@ -35,9 +39,9 @@ class NaiveBayes
   def classify(document, default='unknown')
     sorted = probabilities(document).reject{|key,val| val.nan?}.sort {|a,b| a[1]<=>b[1]}
     best,second_best = sorted.pop, sorted.pop
-    return best[0] if second_best.nil? || second_best[1].nil?
-    return best[0] if best[1]/second_best[1] > THRESHOLD
-    return default
+    return best if second_best.nil? || second_best[1].nil?
+    return best if best[1]/second_best[1] > THRESHOLD
+    return { default => nil }
   end
 
   private

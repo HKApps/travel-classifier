@@ -1,0 +1,25 @@
+<h1>Welcome <%= current_user.first_name %></h1>
+
+<table>
+  <tr>
+    <td>Summary</td>
+    <td>Description</td>
+    <td>Prediction</td>
+    <td>Travel?</td>
+  </tr>
+  <% if @event_to_process %>
+    <tr>
+      <td><%= @event_to_process.summary %></td>
+      <td><%= @event_to_process.description %></td>
+      <td><%= @probability %></td>
+      <td>
+        <%= button_to 'travel', travel_event_train_calendar_events_path, method: :put %>
+        <%= button_to 'nontravel', nontravel_event_train_calendar_events_path, method: :put %>
+      </td>
+    </tr>
+  <% else %>
+    <tr>
+      <td>Sorry, no more events to train.</td>
+    </tr>
+  <% end %>
+</table>

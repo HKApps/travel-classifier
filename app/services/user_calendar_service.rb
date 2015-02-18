@@ -9,21 +9,22 @@ class UserCalendarService
 
   def process
     events_raw.each do |cal|
-      CalendarEvent.find_or_initialize_by(google_id: cal['id']).tap do |event|
+      CalendarEvent.find_or_initialize_by(user_id: @user_id, google_id: cal['id']).tap do |event|
         event.link        = cal['link']
         event.summary     = cal['summary']
         event.description = cal['description']
         event.location    = cal['location']
-        event.start       = cal['dateTime'].to_datetime
-        event.end         = cal['dateTime'].to_datetime
+        event.start       = cal['dateTime'].to_datetime if cal['datetime']
+        event.end         = cal['dateTime'].to_datetime if cal['datetime']
 
         if event.changed?
           event.raw = cal
+          # Queue up events to be trained
+          if event.changes
+            training_data_queue.push(event.google_id)
+          end
           event.save!
         end
-
-        # Queue up events to be trained
-        training_data_queue.push(event.id)
 
         # Run bayes classification on event
         CalendarEventClassifierWorker.perform_async(event.id)
