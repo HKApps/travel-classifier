@@ -52,7 +52,11 @@ class NaiveBayes
     sect = section document
     sect.do :chunk, :segment, :tokenize, :parse, :category
     words = ['verbs', 'nouns', 'adjectives'].map do |tag|
-      sect.send(tag).map(&:value).select(&:present?).map(&:downcase).map(&:stem)
+      sect.send(tag).inject(Array.new) do |result, word|
+        word = word.value
+        result << word.downcase.stem if word.present?
+        result
+      end
     end.flatten!
     words.uniq.tap do |uniq_words|
       word_count = uniq_words.inject(Hash.new(0)) do |hash_sum, word|
@@ -82,7 +86,7 @@ class NaiveBayes
   end
 
   def word_probability(category, word)
-    # Apply Lapace smoothing to eliminate zeros
+    # Apply Lapacian smoothing to eliminate zeros
     (@properties.get_category_word(category, word).to_f + 1) / (@properties.category_word_count(category).to_f + @properties.vocab_count.to_f)
   end
 
